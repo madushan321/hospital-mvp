@@ -1,0 +1,1 @@
+# Hospital MVP - Microservices Architecture Group Assignment - IT4020 Modern Topics in IT ## Services - patient-service → Port 8081 - doctor-service → Port 8082 - appointment-service → Port 8083 - records-service → Port 8084 - billing-service → Port 8085 - api-gateway → Port 8080
