@@ -8,16 +8,26 @@ services:
       - "8081:8081"
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/patients"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   doctor-service:
     build:
       context: ./doctor-service
     container_name: doctor-service
-    command: node src/index.js
+    command: sh -c "npm install && node src/index.js"
     ports:
       - "8082:8082"
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/doctors"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   appointment-service:
     build:
@@ -28,6 +38,11 @@ services:
       - "8083:8083"
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/appointments"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   records-service:
     build:
@@ -38,6 +53,11 @@ services:
       - "8084:8084"
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8084/records"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   billing-service:
     build:
@@ -48,31 +68,101 @@ services:
       - "8085:8085"
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8085/bills"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  api-gateway:
-    image: node:22-alpine
-    container_name: api-gateway
-    working_dir: /usr/src/app
-    volumes:
-      - ./api-gateway:/usr/src/app
-    command: sh -c "npm ci && node src/index.js"
+  postgres-kong:
+    image: postgres:15-alpine
+    container_name: postgres-kong
     environment:
-      - PATIENT_SERVICE_URL=http://patient-service:8081
-      - DOCTOR_SERVICE_URL=http://doctor-service:8082
-      - APPOINTMENT_SERVICE_URL=http://appointment-service:8083
-      - RECORDS_SERVICE_URL=http://records-service:8084
-      - BILLING_SERVICE_URL=http://billing-service:8085
-    ports:
-      - "8080:8080"
-    depends_on:
-      - patient-service
-      - doctor-service
-      - appointment-service
-      - records-service
-      - billing-service
+      POSTGRES_DB: kong
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong_pass
+    volumes:
+      - postgres-kong-data:/var/lib/postgresql/data
     networks:
       - hospital-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kong-migration:
+    image: kong:3.4
+    container_name: kong-migration
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres-kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong_pass
+      KONG_PG_DATABASE: kong
+    networks:
+      - hospital-network
+    depends_on:
+      postgres-kong:
+        condition: service_healthy
+    entrypoint: ["kong", "migrations", "bootstrap"]
+    restart: on-failure
+
+  kong:
+    image: kong:3.4
+    container_name: kong
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres-kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong_pass
+      KONG_PG_DATABASE: kong
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    volumes:
+      - ./kong/kong.yml:/usr/local/kong/declarative.yml:ro
+    networks:
+      - hospital-network
+    depends_on:
+      kong-migration:
+        condition: service_started
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "8001:8001"
+      - "8444:8444"
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  swagger-gateway:
+    build:
+      context: ./swagger-gateway
+    container_name: swagger-gateway
+    ports:
+      - "8086:8086"
+    networks:
+      - hospital-network
+    environment:
+      - KONG_URL=http://kong:8000
+      - PORT=8086
+    depends_on:
+      kong:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8086/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   hospital-network:
     driver: bridge
+
+volumes:
+  postgres-kong-data:
