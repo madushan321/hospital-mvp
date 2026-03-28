@@ -4,7 +4,8 @@ const {
   getAllBills,
   getBillById,
   createBill,
-  payBill
+  payBill,
+  deleteBill
 } = require('../controllers/billingController');
 
 /**
@@ -79,5 +80,24 @@ router.post('/', createBill);
  *         description: Bill marked as paid
  */
 router.patch('/:id/pay', payBill);
+
+/**
+ * @swagger
+ * /bills/{id}:
+ *   delete:
+ *     summary: Delete a bill by ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Bill deleted successfully
+ *       404:
+ *         description: Bill not found
+ */
+router.delete('/:id', deleteBill);
 
 module.exports = router;

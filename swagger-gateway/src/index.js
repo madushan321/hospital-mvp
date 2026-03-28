@@ -267,6 +267,17 @@ const swaggerOptions = {
             '200': { description: 'Bill details' },
             '404': { description: 'Bill not found' }
           }
+        },
+        delete: {
+          tags: ['Billing'],
+          summary: 'Delete bill by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+          ],
+          responses: {
+            '200': { description: 'Bill deleted successfully' },
+            '404': { description: 'Bill not found' }
+          }
         }
       },
       '/bills/{id}/pay': {
