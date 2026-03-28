@@ -1,0 +1,78 @@
+services:
+  patient-service:
+    build:
+      context: ./patient-service
+    container_name: patient-service
+    command: node src/index.js
+    ports:
+      - "8081:8081"
+    networks:
+      - hospital-network
+
+  doctor-service:
+    build:
+      context: ./doctor-service
+    container_name: doctor-service
+    command: node src/index.js
+    ports:
+      - "8082:8082"
+    networks:
+      - hospital-network
+
+  appointment-service:
+    build:
+      context: ./appointment-service
+    container_name: appointment-service
+    command: node src/index.js
+    ports:
+      - "8083:8083"
+    networks:
+      - hospital-network
+
+  records-service:
+    build:
+      context: ./records-service
+    container_name: records-service
+    command: node src/index.js
+    ports:
+      - "8084:8084"
+    networks:
+      - hospital-network
+
+  billing-service:
+    build:
+      context: ./billing-service
+    container_name: billing-service
+    command: node src/index.js
+    ports:
+      - "8085:8085"
+    networks:
+      - hospital-network
+
+  api-gateway:
+    image: node:22-alpine
+    container_name: api-gateway
+    working_dir: /usr/src/app
+    volumes:
+      - ./api-gateway:/usr/src/app
+    command: sh -c "npm ci && node src/index.js"
+    environment:
+      - PATIENT_SERVICE_URL=http://patient-service:8081
+      - DOCTOR_SERVICE_URL=http://doctor-service:8082
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:8083
+      - RECORDS_SERVICE_URL=http://records-service:8084
+      - BILLING_SERVICE_URL=http://billing-service:8085
+    ports:
+      - "8080:8080"
+    depends_on:
+      - patient-service
+      - doctor-service
+      - appointment-service
+      - records-service
+      - billing-service
+    networks:
+      - hospital-network
+
+networks:
+  hospital-network:
+    driver: bridge
