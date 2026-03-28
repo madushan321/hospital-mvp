@@ -24,12 +24,12 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
-        description: 'Swagger Gateway'
+        url: 'http://localhost:8000',
+        description: 'Kong API Gateway (default for Try it out)'
       },
       {
-        url: 'http://localhost:8000',
-        description: 'Kong API Gateway'
+        url: `http://localhost:${PORT}`,
+        description: 'Swagger Gateway (docs host only)'
       }
     ],
     tags: [
