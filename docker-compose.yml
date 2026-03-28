@@ -83,6 +83,8 @@ services:
       - "8087:8080"
     networks:
       - hospital-network
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres-billing
     depends_on:
       - postgres-billing
 

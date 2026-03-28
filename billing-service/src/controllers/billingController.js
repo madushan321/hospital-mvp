@@ -23,8 +23,14 @@ const getBillById = async (req, res) => {
 
 const createBill = async (req, res) => {
   try {
+    const { patientId, appointmentId, amount } = req.body;
     const newBill = await prisma.bill.create({
-      data: { ...req.body, status: 'pending' }
+      data: {
+        patientId: parseInt(patientId),
+        appointmentId: parseInt(appointmentId),
+        amount: parseFloat(amount),
+        status: 'pending'
+      }
     });
     res.status(201).json(newBill);
   } catch (error) {
