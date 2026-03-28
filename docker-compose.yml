@@ -14,20 +14,20 @@ services:
       timeout: 10s
       retries: 3
 
-  doctor-service:
-    build:
-      context: ./doctor-service
-    container_name: doctor-service
-    command: sh -c "npm install && node src/index.js"
-    ports:
-      - "8082:8082"
-    networks:
-      - hospital-network
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/doctors"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # doctor-service:
+  #   build:
+  #     context: ./doctor-service
+  #   container_name: doctor-service
+  #   command: sh -c "npm install && node src/index.js"
+  #   ports:
+  #     - "8082:8082"
+  #   networks:
+  #     - hospital-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/doctors"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   appointment-service:
     build:
@@ -112,11 +112,8 @@ services:
     image: kong:3.4
     container_name: kong
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: postgres-kong
-      KONG_PG_USER: kong
-      KONG_PG_PASSWORD: kong_pass
-      KONG_PG_DATABASE: kong
+      KONG_DATABASE: off
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative.yml
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
@@ -131,9 +128,8 @@ services:
         condition: service_started
     ports:
       - "8000:8000"
-      - "8443:8443"
+      - "9443:8443"
       - "8001:8001"
-      - "8444:8444"
     healthcheck:
       test: ["CMD", "kong", "health"]
       interval: 10s
