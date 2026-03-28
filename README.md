@@ -8,12 +8,12 @@ A microservices-based hospital management system built with Node.js, Express, Ko
 |---------|------|-------------|----------|
 | Kong Gateway | 8000 | API Gateway (proxy) | PostgreSQL |
 | Kong Admin | 8001 | Kong Admin API | - |
-| Swagger Gateway | 8086 | Unified API Documentation | - |
+| Swagger Gateway | 9000 | Unified API Documentation | - |
 | Patient Service | 8081 | Patient management | In-memory |
 | Appointment Service | 8083 | Appointment booking | In-memory |
 | Records Service | 8084 | Medical records | In-memory |
 | Billing Service | 8085 | Billing & payments | PostgreSQL (Prisma) |
-| Adminer | 8087 | Database management UI | - |
+| Adminer | 9001 | Database management UI | - |
 
 ## Architecture
 
@@ -26,7 +26,7 @@ A microservices-based hospital management system built with Node.js, Express, Ko
                     │                         │
             ┌───────▼─────────┐     ┌────────▼────────┐
             │  Kong Gateway  │     │ Swagger Gateway │
-            │    (Port 8000) │     │   (Port 8086)   │
+            │    (Port 8000) │     │   (Port 9000)   │
             └───────┬─────────┘     └────────┬────────┘
                     │                        │
     ┌───────────────┼────────────────────────┘
@@ -73,16 +73,16 @@ docker compose down
 | Service | URL |
 |---------|-----|
 | Kong Gateway | http://localhost:8000 |
-| Swagger UI | http://localhost:8086 |
+| Swagger UI | http://localhost:9000 |
 | Kong Admin API | http://localhost:8001 |
-| Adminer (DB UI) | http://localhost:8087 |
+| Adminer (DB UI) | http://localhost:9001 |
 | Patient Service | http://localhost:8081 |
 | Appointment Service | http://localhost:8083 |
 | Records Service | http://localhost:8084 |
 | Billing Service | http://localhost:8085 |
 
 ### Adminer Login
-- **URL:** http://localhost:8087
+- **URL:** http://localhost:9001
 - **System:** PostgreSQL
 - **Server:** postgres-billing
 - **Username:** postgres
@@ -181,7 +181,7 @@ hospital-mvp/
 ├── billing-service/         # Billing with PostgreSQL + Prisma (Port 8085)
 ├── doctor-service/          # Doctor management (Port 8082) - disabled
 ├── kong/                    # Kong API Gateway config
-├── swagger-gateway/         # Unified Swagger documentation (Port 8086)
+├── swagger-gateway/         # Unified Swagger documentation (Port 9000)
 ├── docker-compose.yml       # Docker Compose configuration
 └── README.md
 ```

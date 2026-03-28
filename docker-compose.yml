@@ -80,7 +80,7 @@ services:
     image: adminer:latest
     container_name: adminer
     ports:
-      - "8087:8080"
+      - "9001:8080"
     networks:
       - hospital-network
     environment:
@@ -174,17 +174,17 @@ services:
       context: ./swagger-gateway
     container_name: swagger-gateway
     ports:
-      - "8086:8086"
+      - "9000:9000"
     networks:
       - hospital-network
     environment:
       - KONG_URL=http://kong:8000
-      - PORT=8086
+      - PORT=9000
     depends_on:
       kong:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8086/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9000/health"]
       interval: 30s
       timeout: 10s
       retries: 3

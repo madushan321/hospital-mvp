@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 8086;
+const PORT = process.env.PORT || 9000;
 const KONG_URL = process.env.KONG_URL || 'http://kong:8000';
 
 const swaggerOptions = {
