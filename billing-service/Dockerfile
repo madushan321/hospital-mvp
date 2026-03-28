@@ -1,4 +1,6 @@
-FROM node:22.18.0-alpine
+FROM node:20-slim
+
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
