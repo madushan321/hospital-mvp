@@ -2,6 +2,7 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const billingRoutes = require('./routes/billingRoutes');
+const prisma = require('./models/bill');
 
 const app = express();
 app.use(express.json());
@@ -19,7 +20,12 @@ const specs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/bills', billingRoutes);
 
-app.listen(8085, () => {
+const server = app.listen(8085, () => {
   console.log('Billing Service  → http://localhost:8085');
   console.log('Swagger UI       → http://localhost:8085/api-docs');
+});
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  server.close();
 });

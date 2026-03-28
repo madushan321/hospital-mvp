@@ -59,15 +59,46 @@ services:
       timeout: 10s
       retries: 3
 
+  postgres-billing:
+    image: postgres:15-alpine
+    container_name: postgres-billing
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres-billing-data:/var/lib/postgresql/data
+    networks:
+      - hospital-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    ports:
+      - "8087:8080"
+    networks:
+      - hospital-network
+    depends_on:
+      - postgres-billing
+
   billing-service:
     build:
       context: ./billing-service
     container_name: billing-service
-    command: node src/index.js
     ports:
       - "8085:8085"
     networks:
       - hospital-network
+    environment:
+      DATABASE_URL: postgresql://postgres:admin@postgres-billing:5432/billing?schema=public
+    depends_on:
+      postgres-billing:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8085/bills"]
       interval: 30s
@@ -162,3 +193,4 @@ networks:
 
 volumes:
   postgres-kong-data:
+  postgres-billing-data:
