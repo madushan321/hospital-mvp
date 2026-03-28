@@ -44,11 +44,28 @@ const payBill = async (req, res) => {
       where: { id: parseInt(req.params.id) },
       data: { status: 'paid' }
     });
-    if (!bill) return res.status(404).json({ message: 'Bill not found' });
     res.json(bill);
   } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Bill not found' });
+    }
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { getAllBills, getBillById, createBill, payBill };
+const deleteBill = async (req, res) => {
+  try {
+    await prisma.bill.delete({
+      where: { id: parseInt(req.params.id) }
+    });
+
+    res.json({ message: 'Bill deleted successfully' });
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Bill not found' });
+    }
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getAllBills, getBillById, createBill, payBill, deleteBill };
