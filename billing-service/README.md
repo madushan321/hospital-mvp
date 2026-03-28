@@ -46,7 +46,7 @@ npm run dev
 |---------|-----|
 | Billing API | http://localhost:8085 |
 | Swagger Docs | http://localhost:8085/api-docs |
-| Adminer (DB UI) | http://localhost:8087 |
+| Adminer (DB UI) | http://localhost:9001 |
 
 ## Database Connection
 
@@ -86,7 +86,8 @@ http://localhost:8085
 | GET | `/bills` | Get all bills |
 | GET | `/bills/:id` | Get bill by ID |
 | POST | `/bills` | Create a new bill |
-| PUT | `/bills/:id/pay` | Mark bill as paid |
+| PATCH | `/bills/:id/pay` | Mark bill as paid |
+| DELETE | `/bills/:id` | Delete a bill by ID |
 
 ### Request/Response Examples
 
@@ -118,7 +119,12 @@ curl http://localhost:8085/bills
 
 #### Pay Bill
 ```bash
-curl -X PUT http://localhost:8085/bills/1/pay
+curl -X PATCH http://localhost:8085/bills/1/pay
+```
+
+#### Delete Bill
+```bash
+curl -X DELETE http://localhost:8085/bills/1
 ```
 
 ## Prisma Commands
