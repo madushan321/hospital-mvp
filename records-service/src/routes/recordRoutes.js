@@ -4,7 +4,8 @@ const {
   getAllRecords,
   getRecordById,
   createRecord,
-  updateRecord
+  updateRecord,
+  deleteRecord
 } = require('../controllers/recordController');
 
 /**
@@ -146,5 +147,35 @@ router.post('/', createRecord);
  *         description: Record not found
  */
 router.put('/:id', updateRecord);
+
+/**
+ * @swagger
+ * /records/{id}:
+ *   delete:
+ *     summary: Delete a medical record
+ *     tags: [Records]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId
+ *     responses:
+ *       200:
+ *         description: Medical record deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Record'
+ *       404:
+ *         description: Record not found
+ */
+router.delete('/:id', deleteRecord);
 
 module.exports = router;

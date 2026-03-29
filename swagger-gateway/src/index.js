@@ -101,6 +101,17 @@ const swaggerOptions = {
           responses: {
             '200': { description: 'Patient updated' }
           }
+        },
+        delete: {
+          tags: ['Patients'],
+          summary: 'Delete patient',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Patient deleted' },
+            '404': { description: 'Patient not found' }
+          }
         }
       },
       '/doctors': {
@@ -128,6 +139,45 @@ const swaggerOptions = {
           ],
           responses: {
             '200': { description: 'Doctor details' },
+            '404': { description: 'Doctor not found' }
+          }
+        },
+        put: {
+          tags: ['Doctors'],
+          summary: 'Update doctor by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Doctor' } } }
+          },
+          responses: {
+            '200': { description: 'Doctor updated' },
+            '404': { description: 'Doctor not found' }
+          }
+        },
+        delete: {
+          tags: ['Doctors'],
+          summary: 'Delete doctor by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Doctor deleted' },
+            '404': { description: 'Doctor not found' }
+          }
+        }
+      },
+      '/doctors/{id}/availability': {
+        get: {
+          tags: ['Doctors'],
+          summary: 'Get doctor availability schedule',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Doctor availability schedule' },
             '404': { description: 'Doctor not found' }
           }
         }
@@ -165,6 +215,17 @@ const swaggerOptions = {
           ],
           responses: {
             '200': { description: 'Appointment details' },
+            '404': { description: 'Appointment not found' }
+          }
+        },
+        delete: {
+          tags: ['Appointments'],
+          summary: 'Delete an appointment',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Appointment deleted' },
             '404': { description: 'Appointment not found' }
           }
         }
@@ -229,6 +290,17 @@ const swaggerOptions = {
           },
           responses: {
             '200': { description: 'Record updated' }
+          }
+        },
+        delete: {
+          tags: ['Records'],
+          summary: 'Delete medical record',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Record deleted' },
+            '404': { description: 'Record not found' }
           }
         }
       },

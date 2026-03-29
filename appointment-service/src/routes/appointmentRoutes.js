@@ -4,7 +4,8 @@ const {
   getAllAppointments,
   getAppointmentById,
   createAppointment,
-  cancelAppointment
+  cancelAppointment,
+  deleteAppointment
 } = require('../controllers/appointmentController');
 
 /**
@@ -152,5 +153,37 @@ router.post('/', createAppointment);
  *         description: Appointment not found
  */
 router.patch('/:id/cancel', cancelAppointment);
+
+/**
+ * @swagger
+ * /appointments/{id}:
+ *   delete:
+ *     summary: Delete an appointment
+ *     tags: [Appointments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: MongoDB ObjectId
+ *     responses:
+ *       200:
+ *         description: Appointment deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Appointment'
+ *       400:
+ *         description: Invalid appointment id
+ *       404:
+ *         description: Appointment not found
+ */
+router.delete('/:id', deleteAppointment);
 
 module.exports = router;
