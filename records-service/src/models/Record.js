@@ -1,6 +1,29 @@
-let records = [
-  { id: 1, patientId: 1, doctorId: 1, diagnosis: 'Flu', treatment: 'Rest and hydration', date: '2026-03-10' },
-  { id: 2, patientId: 2, doctorId: 3, diagnosis: 'Migraine', treatment: 'Pain relief medication', date: '2026-03-12' }
-];
+const mongoose = require('mongoose');
 
-module.exports = records;
+const recordSchema = new mongoose.Schema(
+  {
+    patientId: { type: Number, required: true },
+    doctorId: { type: Number, required: true },
+    diagnosis: { type: String, required: true },
+    treatment: { type: String, required: true },
+    date: { 
+      type: Date, 
+      default: Date.now,
+      set: (value) => {
+        // If value is a string, try to parse it as a date
+        if (typeof value === 'string' && value.trim()) {
+          return new Date(value);
+        }
+        // If value is already a Date, return it
+        if (value instanceof Date) {
+          return value;
+        }
+        // Otherwise use current date
+        return new Date();
+      }
+    }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Record', recordSchema);
