@@ -1,26 +1,140 @@
-const patients = require('../models/Patient');
+const Patient = require('../models/Patient');
 
-const getAllPatients = (req, res) => {
-  res.json(patients);
+// ==================== Get All Patients ====================
+/**
+ * @desc   Get all patients
+ * @route  GET /patients
+ * @access Public
+ */
+const getAllPatients = async (req, res) => {
+  try {
+    const patients = await Patient.find();
+    res.status(200).json({
+      success: true,
+      count: patients.length,
+      data: patients
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
-const getPatientById = (req, res) => {
-  const patient = patients.find(p => p.id === parseInt(req.params.id));
-  if (!patient) return res.status(404).json({ message: 'Patient not found' });
-  res.json(patient);
+// ==================== Get Patient By ID ====================
+/**
+ * @desc   Get single patient by ID
+ * @route  GET /patients/:id
+ * @access Public
+ */
+const getPatientById = async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.id);
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: patient
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
-const createPatient = (req, res) => {
-  const newPatient = { id: patients.length + 1, ...req.body };
-  patients.push(newPatient);
-  res.status(201).json(newPatient);
+// ==================== Create Patient ====================
+/**
+ * @desc   Create a new patient
+ * @route  POST /patients
+ * @access Public
+ */
+const createPatient = async (req, res) => {
+  try {
+    const patient = await Patient.create(req.body);
+    res.status(201).json({
+      success: true,
+      message: 'Patient created successfully',
+      data: patient
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
-const updatePatient = (req, res) => {
-  const idx = patients.findIndex(p => p.id === parseInt(req.params.id));
-  if (idx === -1) return res.status(404).json({ message: 'Patient not found' });
-  patients[idx] = { ...patients[idx], ...req.body };
-  res.json(patients[idx]);
+// ==================== Update Patient ====================
+/**
+ * @desc   Update patient by ID
+ * @route  PUT /patients/:id
+ * @access Public
+ */
+const updatePatient = async (req, res) => {
+  try {
+    const patient = await Patient.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Patient updated successfully',
+      data: patient
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
 };
 
-module.exports = { getAllPatients, getPatientById, createPatient, updatePatient };
+// ==================== Delete Patient ====================
+/**
+ * @desc   Delete patient by ID
+ * @route  DELETE /patients/:id
+ * @access Public
+ */
+const deletePatient = async (req, res) => {
+  try {
+    const patient = await Patient.findByIdAndDelete(req.params.id);
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found'
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Patient deleted successfully',
+      data: patient
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+module.exports = {
+  getAllPatients,
+  getPatientById,
+  createPatient,
+  updatePatient,
+  deletePatient
+};
