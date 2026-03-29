@@ -23,6 +23,9 @@ const {
  *         - qualification
  *         - experience
  *       properties:
+ *         _id:
+ *           type: string
+ *           example: "6607f2f4dc3c1d18e4920c31"
  *         name:
  *           type: string
  *           example: Dr. Nimal Perera
@@ -31,6 +34,7 @@ const {
  *           example: Cardiology
  *         email:
  *           type: string
+ *           format: email
  *           example: nimal@hospital.com
  *         contact:
  *           type: string
@@ -39,7 +43,7 @@ const {
  *           type: string
  *           example: MBBS, MD
  *         experience:
- *           type: number
+ *           type: integer
  *           example: 10
  *         availability:
  *           type: array
@@ -48,6 +52,7 @@ const {
  *             properties:
  *               day:
  *                 type: string
+ *                 enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
  *                 example: Monday
  *               startTime:
  *                 type: string
@@ -55,6 +60,9 @@ const {
  *               endTime:
  *                 type: string
  *                 example: "16:00"
+ *         registeredAt:
+ *           type: string
+ *           format: date-time
  */
 
 /**
@@ -72,6 +80,17 @@ const {
  *     responses:
  *       201:
  *         description: Doctor registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Doctor'
  *       400:
  *         description: Email already registered
  */
@@ -86,6 +105,19 @@ router.post('/', registerDoctor);
  *     responses:
  *       200:
  *         description: List of all doctors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 count:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Doctor'
  */
 router.get('/', getAllDoctors);
 
@@ -104,6 +136,15 @@ router.get('/', getAllDoctors);
  *     responses:
  *       200:
  *         description: Doctor found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Doctor'
  *       404:
  *         description: Doctor not found
  */
@@ -124,6 +165,26 @@ router.get('/:id', getDoctorById);
  *     responses:
  *       200:
  *         description: Doctor availability schedule
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     name:
+ *                       type: string
+ *                     specialization:
+ *                       type: string
+ *                     availability:
+ *                       type: array
+ *                       items:
+ *                         type: object
  *       404:
  *         description: Doctor not found
  */
@@ -150,6 +211,17 @@ router.get('/:id/availability', getDoctorAvailability);
  *     responses:
  *       200:
  *         description: Doctor updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   $ref: '#/components/schemas/Doctor'
  *       404:
  *         description: Doctor not found
  */
@@ -170,6 +242,15 @@ router.put('/:id', updateDoctor);
  *     responses:
  *       200:
  *         description: Doctor deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
  *       404:
  *         description: Doctor not found
  */

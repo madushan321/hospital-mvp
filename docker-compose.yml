@@ -20,7 +20,7 @@ services:
     build:
       context: ./doctor-service
     container_name: doctor-service
-    command: sh -c "npm install && node src/index.js"
+    command: node src/index.js
     environment:
       - MONGO_URI=${MONGO_URI}
     ports:
