@@ -96,7 +96,7 @@ const swaggerOptions = {
           ],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/PatientInput' } } }
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/PatientUpdateInput' } } }
           },
           responses: {
             '200': { description: 'Patient updated' }
@@ -125,8 +125,17 @@ const swaggerOptions = {
         post: {
           tags: ['Doctors'],
           summary: 'Register a new doctor',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/DoctorInput' }
+              }
+            }
+          },
           responses: {
-            '201': { description: 'Doctor created' }
+            '201': { description: 'Doctor created' },
+            '400': { description: 'Validation error' }
           }
         }
       },
@@ -150,7 +159,7 @@ const swaggerOptions = {
           ],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/Doctor' } } }
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/DoctorUpdateInput' } } }
           },
           responses: {
             '200': { description: 'Doctor updated' },
@@ -286,7 +295,7 @@ const swaggerOptions = {
           ],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/RecordInput' } } }
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/RecordUpdateInput' } } }
           },
           responses: {
             '200': { description: 'Record updated' }
@@ -397,6 +406,19 @@ const swaggerOptions = {
             phone: { type: 'string' }
           }
         },
+        PatientUpdateInput: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            gender: { type: 'string', enum: ['Male', 'Female', 'Other'] },
+            bloodType: { type: 'string', enum: ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'] },
+            address: { type: 'string' },
+            medicalHistory: { type: 'string' },
+            age: { type: 'integer' },
+            phone: { type: 'string' }
+          }
+        },
         Doctor: {
           type: 'object',
           properties: {
@@ -422,6 +444,57 @@ const swaggerOptions = {
               }
             },
             registeredAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        DoctorInput: {
+          type: 'object',
+          required: ['name', 'specialization', 'email', 'contact', 'qualification', 'experience'],
+          properties: {
+            name: { type: 'string' },
+            specialization: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            contact: { type: 'string' },
+            qualification: { type: 'string' },
+            experience: { type: 'integer' },
+            availability: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  day: {
+                    type: 'string',
+                    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                  },
+                  startTime: { type: 'string' },
+                  endTime: { type: 'string' }
+                }
+              }
+            }
+          }
+        },
+        DoctorUpdateInput: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            specialization: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            contact: { type: 'string' },
+            qualification: { type: 'string' },
+            experience: { type: 'integer' },
+            availability: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  day: {
+                    type: 'string',
+                    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                  },
+                  startTime: { type: 'string' },
+                  endTime: { type: 'string' }
+                }
+              }
+            }
           }
         },
         Appointment: {
@@ -466,6 +539,16 @@ const swaggerOptions = {
         RecordInput: {
           type: 'object',
           required: ['patientId', 'doctorId', 'diagnosis', 'treatment'],
+          properties: {
+            patientId: { type: 'integer' },
+            doctorId: { type: 'integer' },
+            diagnosis: { type: 'string' },
+            treatment: { type: 'string' },
+            date: { type: 'string', format: 'date-time' }
+          }
+        },
+        RecordUpdateInput: {
+          type: 'object',
           properties: {
             patientId: { type: 'integer' },
             doctorId: { type: 'integer' },

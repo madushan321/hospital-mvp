@@ -63,6 +63,41 @@ const {
  *         registeredAt:
  *           type: string
  *           format: date-time
+ *     DoctorInput:
+ *       type: object
+ *       required:
+ *         - name
+ *         - specialization
+ *         - email
+ *         - contact
+ *         - qualification
+ *         - experience
+ *       properties:
+ *         name:
+ *           type: string
+ *         specialization:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *         contact:
+ *           type: string
+ *         qualification:
+ *           type: string
+ *         experience:
+ *           type: integer
+ *         availability:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               day:
+ *                 type: string
+ *                 enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+ *               startTime:
+ *                 type: string
+ *               endTime:
+ *                 type: string
  */
 
 /**
@@ -76,7 +111,7 @@ const {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Doctor'
+ *             $ref: '#/components/schemas/DoctorInput'
  *     responses:
  *       201:
  *         description: Doctor registered successfully
@@ -207,7 +242,7 @@ router.get('/:id/availability', getDoctorAvailability);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Doctor'
+ *             $ref: '#/components/schemas/DoctorInput'
  *     responses:
  *       200:
  *         description: Doctor updated successfully
