@@ -81,7 +81,7 @@ const swaggerOptions = {
           tags: ['Patients'],
           summary: 'Get patient by ID',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           responses: {
             '200': { description: 'Patient details', content: { 'application/json': { schema: { $ref: '#/components/schemas/Patient' } } } },
@@ -92,7 +92,7 @@ const swaggerOptions = {
           tags: ['Patients'],
           summary: 'Update patient',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           requestBody: {
             required: true,
@@ -100,6 +100,17 @@ const swaggerOptions = {
           },
           responses: {
             '200': { description: 'Patient updated' }
+          }
+        },
+        delete: {
+          tags: ['Patients'],
+          summary: 'Delete patient',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Patient deleted' },
+            '404': { description: 'Patient not found' }
           }
         }
       },
@@ -124,10 +135,49 @@ const swaggerOptions = {
           tags: ['Doctors'],
           summary: 'Get doctor by ID',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           responses: {
             '200': { description: 'Doctor details' },
+            '404': { description: 'Doctor not found' }
+          }
+        },
+        put: {
+          tags: ['Doctors'],
+          summary: 'Update doctor by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Doctor' } } }
+          },
+          responses: {
+            '200': { description: 'Doctor updated' },
+            '404': { description: 'Doctor not found' }
+          }
+        },
+        delete: {
+          tags: ['Doctors'],
+          summary: 'Delete doctor by ID',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Doctor deleted' },
+            '404': { description: 'Doctor not found' }
+          }
+        }
+      },
+      '/doctors/{id}/availability': {
+        get: {
+          tags: ['Doctors'],
+          summary: 'Get doctor availability schedule',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Doctor availability schedule' },
             '404': { description: 'Doctor not found' }
           }
         }
@@ -161,10 +211,21 @@ const swaggerOptions = {
           tags: ['Appointments'],
           summary: 'Get appointment by ID',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           responses: {
             '200': { description: 'Appointment details' },
+            '404': { description: 'Appointment not found' }
+          }
+        },
+        delete: {
+          tags: ['Appointments'],
+          summary: 'Delete an appointment',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Appointment deleted' },
             '404': { description: 'Appointment not found' }
           }
         }
@@ -174,7 +235,7 @@ const swaggerOptions = {
           tags: ['Appointments'],
           summary: 'Cancel an appointment',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           responses: {
             '200': { description: 'Appointment cancelled' }
@@ -210,7 +271,7 @@ const swaggerOptions = {
           tags: ['Records'],
           summary: 'Get medical record by ID',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           responses: {
             '200': { description: 'Record details' },
@@ -221,7 +282,7 @@ const swaggerOptions = {
           tags: ['Records'],
           summary: 'Update medical record',
           parameters: [
-            { name: 'id', in: 'path', required: true, schema: { type: 'integer' } }
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           requestBody: {
             required: true,
@@ -229,6 +290,17 @@ const swaggerOptions = {
           },
           responses: {
             '200': { description: 'Record updated' }
+          }
+        },
+        delete: {
+          tags: ['Records'],
+          summary: 'Delete medical record',
+          parameters: [
+            { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+          ],
+          responses: {
+            '200': { description: 'Record deleted' },
+            '404': { description: 'Record not found' }
           }
         }
       },
@@ -298,17 +370,29 @@ const swaggerOptions = {
         Patient: {
           type: 'object',
           properties: {
-            id: { type: 'integer' },
+            _id: { type: 'string' },
             name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            gender: { type: 'string', enum: ['Male', 'Female', 'Other'] },
+            bloodType: { type: 'string', enum: ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'] },
+            address: { type: 'string' },
+            medicalHistory: { type: 'string' },
             age: { type: 'integer' },
-            phone: { type: 'string' }
+            phone: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
           }
         },
         PatientInput: {
           type: 'object',
-          required: ['name', 'age'],
+          required: ['name', 'email', 'phone', 'age', 'gender', 'bloodType', 'address'],
           properties: {
             name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            gender: { type: 'string', enum: ['Male', 'Female', 'Other'] },
+            bloodType: { type: 'string', enum: ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'] },
+            address: { type: 'string' },
+            medicalHistory: { type: 'string' },
             age: { type: 'integer' },
             phone: { type: 'string' }
           }
@@ -316,21 +400,42 @@ const swaggerOptions = {
         Doctor: {
           type: 'object',
           properties: {
-            id: { type: 'integer' },
+            _id: { type: 'string' },
             name: { type: 'string' },
             specialization: { type: 'string' },
-            phone: { type: 'string' }
+            email: { type: 'string', format: 'email' },
+            contact: { type: 'string' },
+            qualification: { type: 'string' },
+            experience: { type: 'integer' },
+            availability: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  day: {
+                    type: 'string',
+                    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+                  },
+                  startTime: { type: 'string' },
+                  endTime: { type: 'string' }
+                }
+              }
+            },
+            registeredAt: { type: 'string', format: 'date-time' }
           }
         },
         Appointment: {
           type: 'object',
           properties: {
-            id: { type: 'integer' },
+            _id: { type: 'string' },
             patientId: { type: 'integer' },
             doctorId: { type: 'integer' },
             date: { type: 'string' },
             time: { type: 'string' },
-            status: { type: 'string', enum: ['pending', 'confirmed', 'cancelled'] }
+            status: { type: 'string', enum: ['pending', 'confirmed', 'cancelled'] },
+            reason: { type: 'string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
           }
         },
         AppointmentInput: {
@@ -340,29 +445,33 @@ const swaggerOptions = {
             patientId: { type: 'integer' },
             doctorId: { type: 'integer' },
             date: { type: 'string' },
-            time: { type: 'string' }
+            time: { type: 'string' },
+            status: { type: 'string', enum: ['pending', 'confirmed', 'cancelled'] },
+            reason: { type: 'string' }
           }
         },
         Record: {
           type: 'object',
           properties: {
-            id: { type: 'integer' },
+            _id: { type: 'string' },
             patientId: { type: 'integer' },
             doctorId: { type: 'integer' },
             diagnosis: { type: 'string' },
             treatment: { type: 'string' },
-            date: { type: 'string' }
+            date: { type: 'string', format: 'date-time' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
           }
         },
         RecordInput: {
           type: 'object',
-          required: ['patientId', 'doctorId', 'diagnosis'],
+          required: ['patientId', 'doctorId', 'diagnosis', 'treatment'],
           properties: {
             patientId: { type: 'integer' },
             doctorId: { type: 'integer' },
             diagnosis: { type: 'string' },
             treatment: { type: 'string' },
-            date: { type: 'string' }
+            date: { type: 'string', format: 'date-time' }
           }
         },
         Bill: {
@@ -373,7 +482,9 @@ const swaggerOptions = {
             appointmentId: { type: 'integer' },
             amount: { type: 'number' },
             status: { type: 'string', enum: ['pending', 'paid'] },
-            date: { type: 'string' }
+            date: { type: 'string', format: 'date-time' },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
           }
         },
         BillInput: {
@@ -382,8 +493,7 @@ const swaggerOptions = {
           properties: {
             patientId: { type: 'integer' },
             appointmentId: { type: 'integer' },
-            amount: { type: 'number' },
-            date: { type: 'string' }
+            amount: { type: 'number' }
           }
         }
       }

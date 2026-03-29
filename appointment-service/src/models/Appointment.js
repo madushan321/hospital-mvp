@@ -1,6 +1,36 @@
-let appointments = [
-  { id: 1, patientId: 1, doctorId: 1, date: "2026-04-01", time: "10:00", status: "confirmed" },
-  { id: 2, patientId: 2, doctorId: 3, date: "2026-04-02", time: "14:00", status: "pending"   }
-];
+const mongoose = require('mongoose');
 
-module.exports = appointments;
+const appointmentSchema = new mongoose.Schema(
+  {
+    patientId: {
+      type: Number,
+      required: true,
+    },
+    doctorId: {
+      type: Number,
+      required: true,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'confirmed', 'cancelled'],
+      default: 'pending',
+    },
+    reason: {
+      type: String,
+      default: '',
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model('Appointment', appointmentSchema);

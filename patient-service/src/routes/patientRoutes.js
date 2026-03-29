@@ -10,6 +10,86 @@ const {
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     Patient:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           example: "6607f2f4dc3c1d18e4920c31"
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *         phone:
+ *           type: string
+ *         age:
+ *           type: integer
+ *         gender:
+ *           type: string
+ *           enum: [Male, Female, Other]
+ *         bloodType:
+ *           type: string
+ *           enum: [O+, O-, A+, A-, B+, B-, AB+, AB-]
+ *         address:
+ *           type: string
+ *         medicalHistory:
+ *           type: string
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     PatientInput:
+ *       type: object
+ *       required: [name, email, phone, age, gender, bloodType, address]
+ *       properties:
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *           format: email
+ *         phone:
+ *           type: string
+ *         age:
+ *           type: integer
+ *         gender:
+ *           type: string
+ *           enum: [Male, Female, Other]
+ *         bloodType:
+ *           type: string
+ *           enum: [O+, O-, A+, A-, B+, B-, AB+, AB-]
+ *         address:
+ *           type: string
+ *         medicalHistory:
+ *           type: string
+ *     PatientListResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         count:
+ *           type: integer
+ *         data:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Patient'
+ *     PatientSingleResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         message:
+ *           type: string
+ *         data:
+ *           $ref: '#/components/schemas/Patient'
+ */
+
+/**
+ * @swagger
  * /patients:
  *   get:
  *     summary: Get all patients
@@ -20,14 +100,7 @@ const {
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 count:
- *                   type: integer
- *                 data:
- *                   type: array
+ *               $ref: '#/components/schemas/PatientListResponse'
  *       500:
  *         description: Server error
  */
@@ -49,6 +122,10 @@ router.get('/', getAllPatients);
  *     responses:
  *       200:
  *         description: A single patient
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PatientSingleResponse'
  *       404:
  *         description: Patient not found
  */
@@ -65,36 +142,14 @@ router.get('/:id', getPatientById);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [name, email, phone, age, gender, bloodType, address]
- *             properties:
- *               name:
- *                 type: string
- *                 example: "Kamal Perera"
- *               email:
- *                 type: string
- *                 format: email
- *                 example: "kamal@example.com"
- *               phone:
- *                 type: string
- *                 example: "0771234567"
- *               age:
- *                 type: integer
- *                 example: 45
- *               gender:
- *                 type: string
- *                 enum: [Male, Female, Other]
- *               bloodType:
- *                 type: string
- *                 enum: [O+, O-, A+, A-, B+, B-, AB+, AB-]
- *               address:
- *                 type: string
- *                 example: "123 Main Street"
- *               medicalHistory:
- *                 type: string
+ *             $ref: '#/components/schemas/PatientInput'
  *     responses:
  *       201:
  *         description: Patient created successfully in MongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PatientSingleResponse'
  *       400:
  *         description: Validation error
  */
@@ -117,10 +172,14 @@ router.post('/', createPatient);
  *       content:
  *         application/json:
  *           schema:
- *             type: object
+ *             $ref: '#/components/schemas/PatientInput'
  *     responses:
  *       200:
  *         description: Patient updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PatientSingleResponse'
  *       404:
  *         description: Patient not found
  */
@@ -141,6 +200,10 @@ router.put('/:id', updatePatient);
  *     responses:
  *       200:
  *         description: Patient deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PatientSingleResponse'
  *       404:
  *         description: Patient not found
  */

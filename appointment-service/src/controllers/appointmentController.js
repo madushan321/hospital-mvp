@@ -1,26 +1,91 @@
-const appointments = require('../models/Appointment');
+const mongoose = require('mongoose');
+const Appointment = require('../models/Appointment');
 
-const getAllAppointments = (req, res) => {
-  res.json(appointments);
+const getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find().sort({ createdAt: -1 });
+    res.json(appointments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-const getAppointmentById = (req, res) => {
-  const appt = appointments.find(a => a.id === parseInt(req.params.id));
-  if (!appt) return res.status(404).json({ message: 'Appointment not found' });
-  res.json(appt);
+const getAppointmentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid appointment id' });
+    }
+
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-const createAppointment = (req, res) => {
-  const newAppt = { id: appointments.length + 1, status: 'pending', ...req.body };
-  appointments.push(newAppt);
-  res.status(201).json(newAppt);
+const createAppointment = async (req, res) => {
+  try {
+    const newAppointment = await Appointment.create({
+      ...req.body,
+      status: req.body.status || 'pending',
+    });
+
+    res.status(201).json(newAppointment);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
-const cancelAppointment = (req, res) => {
-  const appt = appointments.find(a => a.id === parseInt(req.params.id));
-  if (!appt) return res.status(404).json({ message: 'Appointment not found' });
-  appt.status = 'cancelled';
-  res.json(appt);
+const cancelAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid appointment id' });
+    }
+
+    const appointment = await Appointment.findByIdAndUpdate(
+      id,
+      { status: 'cancelled' },
+      { new: true }
+    );
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-module.exports = { getAllAppointments, getAppointmentById, createAppointment, cancelAppointment };
+const deleteAppointment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid appointment id' });
+    }
+
+    const appointment = await Appointment.findByIdAndDelete(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    res.json({ message: 'Appointment deleted successfully', data: appointment });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  getAllAppointments,
+  getAppointmentById,
+  createAppointment,
+  cancelAppointment,
+  deleteAppointment,
+};

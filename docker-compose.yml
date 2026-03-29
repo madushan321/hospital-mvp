@@ -4,6 +4,8 @@ services:
       context: ./patient-service
     container_name: patient-service
     command: node src/index.js
+    environment:
+      - MONGO_URI=${MONGO_URI}
     ports:
       - "8081:8081"
     networks:
@@ -14,26 +16,30 @@ services:
       timeout: 10s
       retries: 3
 
-  # doctor-service:
-  #   build:
-  #     context: ./doctor-service
-  #   container_name: doctor-service
-  #   command: sh -c "npm install && node src/index.js"
-  #   ports:
-  #     - "8082:8082"
-  #   networks:
-  #     - hospital-network
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/doctors"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+  doctor-service:
+    build:
+      context: ./doctor-service
+    container_name: doctor-service
+    command: node src/index.js
+    environment:
+      - MONGO_URI=${MONGO_URI}
+    ports:
+      - "8082:8082"
+    networks:
+      - hospital-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/doctors"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   appointment-service:
     build:
       context: ./appointment-service
     container_name: appointment-service
     command: node src/index.js
+    environment:
+      - MONGO_URI=${MONGO_URI}
     ports:
       - "8083:8083"
     networks:
@@ -49,6 +55,8 @@ services:
       context: ./records-service
     container_name: records-service
     command: node src/index.js
+    environment:
+      - MONGO_URI=${MONGO_URI}
     ports:
       - "8084:8084"
     networks:
