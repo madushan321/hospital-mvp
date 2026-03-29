@@ -20,7 +20,8 @@ app.use((err, req, res, next) => {
 });
 
 // Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://subodhimihisarani23_db:12345@cluster0.8ac0mrq.mongodb.net/records-service';
+const baseMongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const MONGODB_URI = `${baseMongoUri.replace(/\/+$/, '')}/hospital_records`;
 const PORT = process.env.PORT || 8084;
 
 mongoose

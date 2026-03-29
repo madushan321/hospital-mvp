@@ -9,8 +9,8 @@ const doctorRoutes = require('./routes/doctorRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 8082;
-const MONGO_URI = process.env.MONGO_URI ||
-  'mongodb://localhost:27017/hospital_doctors';
+const baseMongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const MONGO_URI = `${baseMongoUri.replace(/\/+$/, '')}/hospital_doctors`;
 
 // Middleware
 app.use(cors());
@@ -51,14 +51,14 @@ app.get('/health', (req, res) => {
 // Connect MongoDB & Start Server
 mongoose.connect(MONGO_URI)
   .then(() => {
-    console.log('✅ Connected to MongoDB - Doctor DB');
+    console.log('Connected to MongoDB - Doctor DB');
     app.listen(PORT, () => {
-      console.log(`🚀 Doctor Service running on http://localhost:${PORT}`);
-      console.log(`📄 Swagger UI: http://localhost:${PORT}/api-docs`);
+      console.log(`Doctor Service running on http://localhost:${PORT}`);
+      console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
     });
   })
   .catch(err => {
-    console.error('❌ MongoDB error:', err.message);
+    console.error('MongoDB error:', err.message);
     process.exit(1);
   });
 

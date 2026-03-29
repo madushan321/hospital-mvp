@@ -28,7 +28,7 @@ router.get('/', getAllAppointments);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: A single appointment
@@ -73,7 +73,7 @@ router.post('/', createAppointment);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Appointment cancelled

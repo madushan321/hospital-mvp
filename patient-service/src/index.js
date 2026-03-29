@@ -8,10 +8,13 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+const baseMongoUri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const patientMongoUri = `${baseMongoUri.replace(/\/+$/, '')}/hospital_patients`;
+
 // ==================== MongoDB Connection ====================
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    const conn = await mongoose.connect(patientMongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
