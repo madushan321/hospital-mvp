@@ -1,27 +1,42 @@
-const records = require('../models/Record');
+const Record = require('../models/Record');
 
-const getAllRecords = (req, res) => {
-  res.json(records);
+const getAllRecords = async (req, res) => {
+  try {
+    const records = await Record.find();
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching records', error: error.message });
+  }
 };
 
-const getRecordById = (req, res) => {
-  const record = records.find(r => r.id === parseInt(req.params.id));
-  if (!record) return res.status(404).json({ message: 'Record not found' });
-  res.json(record);
+const getRecordById = async (req, res) => {
+  try {
+    const record = await Record.findById(req.params.id);
+    if (!record) return res.status(404).json({ message: 'Record not found' });
+    res.json(record);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching record', error: error.message });
+  }
 };
 
-const createRecord = (req, res) => {
-  const newRecord = { id: records.length + 1, ...req.body };
-  records.push(newRecord);
-  res.status(201).json(newRecord);
+const createRecord = async (req, res) => {
+  try {
+    const newRecord = new Record(req.body);
+    await newRecord.save();
+    res.status(201).json(newRecord);
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating record', error: error.message });
+  }
 };
 
-const updateRecord = (req, res) => {
-  const record = records.find(r => r.id === parseInt(req.params.id));
-  if (!record) return res.status(404).json({ message: 'Record not found' });
-
-  Object.assign(record, req.body);
-  res.json(record);
+const updateRecord = async (req, res) => {
+  try {
+    const record = await Record.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!record) return res.status(404).json({ message: 'Record not found' });
+    res.json(record);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating record', error: error.message });
+  }
 };
 
 module.exports = { getAllRecords, getRecordById, createRecord, updateRecord };
