@@ -125,8 +125,19 @@ const swaggerOptions = {
         post: {
           tags: ['Doctors'],
           summary: 'Register a new doctor',
+          description: 'Create a new doctor record with required personal and professional information',
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/DoctorInput' }
+              }
+            }
+          },
           responses: {
-            '201': { description: 'Doctor created' }
+            '201': { description: 'Doctor registered successfully' },
+            '400': { description: 'Validation error or email already registered' },
+            '500': { description: 'Internal server error' }
           }
         }
       },
@@ -145,16 +156,23 @@ const swaggerOptions = {
         put: {
           tags: ['Doctors'],
           summary: 'Update doctor by ID',
+          description: 'Update doctor information with validation',
           parameters: [
             { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
           ],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/Doctor' } } }
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/DoctorInput' }
+              }
+            }
           },
           responses: {
-            '200': { description: 'Doctor updated' },
-            '404': { description: 'Doctor not found' }
+            '200': { description: 'Doctor updated successfully' },
+            '400': { description: 'Validation error or email already registered' },
+            '404': { description: 'Doctor not found' },
+            '500': { description: 'Internal server error' }
           }
         },
         delete: {
@@ -422,6 +440,65 @@ const swaggerOptions = {
               }
             },
             registeredAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        DoctorInput: {
+          type: 'object',
+          required: ['name', 'specialization', 'email', 'contact', 'qualification', 'experience'],
+          properties: {
+            name: {
+              type: 'string',
+              description: "Doctor's full name",
+              example: 'Dr. Nimal Perera'
+            },
+            specialization: {
+              type: 'string',
+              description: 'Medical specialization',
+              example: 'Cardiology'
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              description: 'Unique email address',
+              example: 'nimal@hospital.com'
+            },
+            contact: {
+              type: 'string',
+              description: 'Contact phone number',
+              example: '0712345678'
+            },
+            qualification: {
+              type: 'string',
+              description: 'Educational qualifications',
+              example: 'MBBS, MD'
+            },
+            experience: {
+              type: 'integer',
+              description: 'Years of professional experience',
+              example: 10
+            },
+            availability: {
+              type: 'array',
+              description: "Doctor's availability schedule (optional)",
+              items: {
+                type: 'object',
+                properties: {
+                  day: {
+                    type: 'string',
+                    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    example: 'Monday'
+                  },
+                  startTime: {
+                    type: 'string',
+                    example: '08:00'
+                  },
+                  endTime: {
+                    type: 'string',
+                    example: '16:00'
+                  }
+                }
+              }
+            }
           }
         },
         Appointment: {

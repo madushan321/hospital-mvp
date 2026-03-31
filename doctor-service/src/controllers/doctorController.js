@@ -11,6 +11,14 @@ const registerDoctor = async (req, res) => {
       data: doctor
     });
   } catch (error) {
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+    // Handle duplicate email error
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
@@ -71,6 +79,20 @@ const updateDoctor = async (req, res) => {
       data: doctor
     });
   } catch (error) {
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        success: false,
+        message: error.message
+      });
+    }
+    // Handle duplicate email error
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered'
+      });
+    }
     res.status(500).json({ success: false, message: error.message });
   }
 };
